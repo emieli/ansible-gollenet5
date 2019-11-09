@@ -1,0 +1,20 @@
+---
+
+- name: remove bgp
+  junos_config:
+    lines: 
+      - delete protocols bgp
+      - delete routing-options autonomous-system
+  when:
+    - (bgp.state == "absent") or (bgp.state == "changed")
+
+- name: configure bgp
+  junos_config:
+    src: junos.j2
+  when: 
+    - (bgp.state == "present") or (bgp.state == "changed")
+  register: output  
+- name: changes performed
+  debug:
+    msg: "{{ output.commands }}"
+  when: output.commands is defined

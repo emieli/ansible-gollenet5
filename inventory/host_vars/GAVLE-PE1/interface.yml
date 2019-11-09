@@ -1,0 +1,11 @@
+interface:
+
+  FALUN-C2_GAVLE-PE1:
+    state:              present
+    interface:          GigabitEthernet0/0/0/1
+    description:        "UPLINK;ISIS-L2;LDP"
+
+  BRLNG-C1_GAVLE-PE1:
+    state:              present
+    interface:          GigabitEthernet0/0/0/0
+    description:        "UPLINK;ISIS-L2;LDP"

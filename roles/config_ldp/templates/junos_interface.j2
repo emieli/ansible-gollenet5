@@ -1,0 +1,3 @@
+set interfaces {{ item.value.interface }} unit {{ item.value.vlan | default("0") }} family mpls
+set protocols ldp interface {{ item.value.interface }}.{{ item.value.vlan | default("0") }}
+set protocols mpls interface {{ item.value.interface }}.{{ item.value.vlan | default("0") }}

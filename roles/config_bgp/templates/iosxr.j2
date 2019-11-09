@@ -1,0 +1,48 @@
+route-policy RM_ALLOW_ALL
+  pass
+end-policy
+
+{# START VPNV4 PEER-GROUP #}
+{% for pg_key, pg_value in bgp.vpnv4.peer_group.iteritems() if bgp.vpnv4.peer_group is defined %}
+router bgp {{ bgp.as }} address-family vpnv4 unicast
+router bgp {{ bgp.as }} neighbor-group {{ pg_key }} remote-as {{ pg_value.remote_as }}  
+{#  update-source #}
+{%  if pg_value.update_source is defined %}
+router bgp {{ bgp.as }} neighbor-group {{ pg_key }} update-source Loopback0 {{ pg_value.update_source }}
+{%  endif %}
+router bgp {{ bgp.as }} neighbor-group {{ pg_key }} address-family vpnv4 unicast route-policy RM_ALLOW_ALL in
+router bgp {{ bgp.as }} neighbor-group {{ pg_key }} address-family vpnv4 unicast route-policy RM_ALLOW_ALL out
+
+{#  Loops through neighbor groups, configuring each IP-address #}
+{%  for neighbor_group in pg_value.neighbor_group if pg_value.neighbor_group is defined %}
+{%   for host in groups[neighbor_group] if host != inventory_hostname %}
+router bgp {{ bgp.as }} neighbor {{ hostvars[host]['interface']['CORE_LOOPBACK']['ipv4'] | ipaddr('address') }} use neighbor-group {{ pg_key }}
+{%   endfor %}
+{%  endfor  %}
+{% endfor   %}
+{# END VPNV4 PEER-GROUP #}
+
+{# START IPV4 VRF PEER-GROUP #}
+{% for vrf_key, vrf_value in bgp.ipv4_vrf.iteritems() if vrf_value.peer_group is defined %}
+{%  for pg_key, pg_value in vrf_value.peer_group.iteritems() %}
+
+{#  CONFIGURE IPV4 PEER-GROUP #}
+{%   if pg_value.state != "absent" %}
+router bgp {{ bgp.as }} neighbor-group {{ pg_key }} remote-as {{ pg_value.remote_as }}
+router bgp {{ bgp.as }} neighbor-group {{ pg_key }} address-family ipv4 unicast route-policy {{ pg_value.route_map_in  }} in
+router bgp {{ bgp.as }} neighbor-group {{ pg_key }} address-family ipv4 unicast route-policy {{ pg_value.route_map_out }} out
+{%    for host in pg_value.neighbor_ip if pg_value.neighbor_ip is defined %}
+router bgp {{ bgp.as }} vrf {{ vrf_key }} neighbor {{ host }} use neighbor-group {{ pg_key }}
+{%    endfor %}
+
+{#  REMOVE IPV4 PEER-GROUP #}
+{%   elif pg_value.state == "absent" %}
+{%    for host in pg_value.neighbor_ip if pg_value.neighbor_ip is defined %}
+no router bgp {{ bgp.as }} vrf {{ vrf_key }} neighbor {{ host }}
+{%    endfor %}
+no router bgp {{ bgp.as }} neighbor-group {{ pg_key }}
+{%   endif %}
+
+{%  endfor %}
+{% endfor %}
+{# END IPV4 VRF PEER-GROUP #}

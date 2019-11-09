@@ -1,0 +1,30 @@
+{# set 'interface' variable #}
+{% if item.value.vlan is defined and item.value.vlan.number|int > 0 %}
+{%  set interface = item.value.interface + "." + item.value.vlan.number %}
+{% else %}
+{%  set interface = item.value.interface %}
+{% endif %}
+
+{# subinterface #}
+{% if item.value.vlan is defined and item.value.vlan.number|int > 0 %}
+interface {{ interface }} encapsulation dot1q {{ item.value.vlan.number }}
+{% endif %}
+
+{# description #}
+{%   if item.value.description != "absent" %}
+interface {{ interface }} description "{{ item.value.description }}"
+{% elif item.value.description == "absent" %}
+no interface {{ interface }} description
+{% endif %}
+
+{# vrf #}
+{%   if item.value.vrf is defined %}
+interface {{ interface }} vrf {{ item.value.vrf.name }}
+{% endif %}
+
+{# ipv4 #}
+{%   if item.value.ipv4 is defined and item.value.ipv4 != "absent" %}
+interface {{ interface }} ipv4 address {{ item.value.ipv4 | ipaddr('address') }} {{ item.value.ipv4 | ipaddr('netmask') }}
+{% elif item.value.ipv4 is defined and item.value.ipv4 == "absent" %}
+no interface {{ interface }} ipv4 address
+{% endif %}

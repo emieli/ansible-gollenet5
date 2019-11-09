@@ -1,0 +1,14 @@
+interface {{ item.value.interface }}
+ ip router isis core
+ 
+{# metric #}
+{% if item.value.description is defined and "CROSSLINK" in item.value.description %} isis metric {{ isis.metric_crosslink }}{% endif %}
+{% if item.value.description is defined and "DOWNLINK" in item.value.description  %} isis metric {{ isis.metric_downlink  }}{% endif %}
+{% if item.value.description is defined and "UPLINK" in item.value.description    %} isis metric {{ isis.metric_uplink    }}{% endif %}
+ 
+{% if item.key != "CORE_LOOPBACK" %} isis network point-to-point{% endif %}
+
+{# circuit-type ISIS-L2 #}
+{% if item.value.description is defined and "ISIS-L2" in item.value.description %} isis circuit-type level-2-only{% endif %}
+{% if item.value.description is defined and "ISIS-L1" in item.value.description %} isis circuit-type level-1{% endif %}
+{% if item.value.description is defined and item.value.description == "absent"  %} no isis circuit-type{% endif %}

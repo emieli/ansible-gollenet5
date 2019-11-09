@@ -1,0 +1,28 @@
+---
+
+- name: junos isis
+  junos_config:
+    src: junos.j2
+    src_format: set
+    update: replace
+
+- name: junos isis interface
+  junos_config:
+    src: junos_interface.j2
+    src_format: set
+  when: '"ISIS" in item.value.description'
+  loop: "{{ interface | dict2items }}"
+  loop_control:
+    label: "{{ item.key }}"
+  register: output
+
+- set_fact: output_updates={{ output_updates | default([]) + item.invocation.module_args['src'].split("\n") }}
+  when: item.changed|bool == True
+  loop: "{{ output.results }}"
+  loop_control:
+    label: "{{ item.item.key }}"
+    
+- name: changes performed
+  debug:
+    msg: "{{ output_updates }}"
+  when: output_updates is defined

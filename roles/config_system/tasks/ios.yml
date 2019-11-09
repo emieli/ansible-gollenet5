@@ -1,0 +1,22 @@
+- name: console
+  ios_config:
+    lines:
+      - privilege level 15
+      - logging synchronous
+      - length 0
+      - width 500
+      - exec-timeout 60 0
+    parents: "line con 0"
+    
+- name: banner
+  ios_banner:
+    banner: motd
+    text: |
+      ##################################
+      ###                            ###
+      ###         golle5.net         ###
+      ###     MANAGED BY ANSIBLE     ###
+      ### DO NOT MAKE CONFIG CHANGES ###
+      ###                            ###
+      ##################################
+    state: present

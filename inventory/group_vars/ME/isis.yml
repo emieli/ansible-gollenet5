@@ -1,0 +1,7 @@
+isis:
+  state: present
+  net_area: 49.0007
+  
+  metric_crosslink: 10
+  metric_downlink:  10
+  metric_uplink:    1000

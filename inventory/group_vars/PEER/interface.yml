@@ -1,0 +1,15 @@
+interface:
+  
+  CORE_LOOPBACK:
+    state:        present
+    interface:    lo0
+    unit:         0
+    description:  "ROUTERID;ISIS"
+    mask:         32
+    
+  IX:
+    state:        present
+    interface:    ge-0/0/8
+    unit:         0
+    description:  "EXTERNAL-IX;DOWNLINK"
+    vrf:          INTERNET

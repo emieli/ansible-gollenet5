@@ -1,0 +1,24 @@
+---
+
+# https://phpipam.net/api-documentation
+
+ipam_api_pass:              gollenet5
+ipam_api_user:              gollenet5
+ipam_app_id:                gollenet5
+ipam_description:           Created by Ansible
+
+ipam_section:               5
+ipam_devicetype_ce:         10
+
+# URLs:
+ipam_ce_devices:            http://ipam.golle.org/api/gollenet5/tools/device_types/10/devices
+ipam_pe_devices:            http://ipam.golle.org/api/gollenet5/tools/device_types/11/devices
+ipam_peer_devices:          http://ipam.golle.org/api/gollenet5/tools/device_types/12/devices
+ipam_token_request:         http://ipam.golle.org/api/gollenet5/user
+ipam_subnets:               http://ipam.golle.org/api/gollenet5/subnets
+ipam_devices:               http://ipam.golle.org/api/gollenet5/devices
+ipam_sections:              http://ipam.golle.org/api/gollenet5/sections
+ipam_prefix:                http://ipam.golle.org/api/gollenet5/prefix
+ipam_vrf:                   http://ipam.golle.org/api/gollenet5/vrf
+# /api/my_app/addresses/first_free/{subnetId}/
+ipam_addresses_first_free:  http://ipam.golle.org/api/gollenet5/addresses/first_free

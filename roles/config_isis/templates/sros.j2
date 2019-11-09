@@ -1,0 +1,5 @@
+config router Base isis 0 area-id {{ isis.net_area }}
+config router Base isis 0 level-capability level-1
+config router Base isis 0 level 1 wide-metrics-only
+config router Base isis 0 level 1 default-metric {{ isis.metric_uplink }}
+config router Base isis 0 interface "system" no shutdown

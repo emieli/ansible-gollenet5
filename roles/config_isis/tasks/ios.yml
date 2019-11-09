@@ -1,0 +1,30 @@
+---
+
+- name: isis
+  ios_config:
+    src: ios.j2
+  register: output  
+- name: changes performed
+  debug:
+    msg: "{{ output.commands }}"
+  when: output.commands is defined
+
+- name: isis interface
+  ios_config:
+    src: ios.j2
+  when: '"ISIS" in item.value.description'
+  loop: "{{ interface | dict2items }}"
+  loop_control:
+    label: "{{ item.key }}"
+  register: output
+
+- set_fact: output_updates={{ output_updates | default([]) + item.commands }}
+  when: item.commands is defined
+  loop: "{{ output.results }}"
+  loop_control:
+    label: "{{ item.item.key }}"
+    
+- name: changes performed
+  debug:
+    msg: "{{ output_updates }}"
+  when: output_updates is defined

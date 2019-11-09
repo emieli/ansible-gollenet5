@@ -1,0 +1,56 @@
+---
+
+# Task:
+# 1. show interface | display set
+# 2. keep all rows with "inet address" and change all "set" commands to "delete", save in variable 'interface_address_to_delete'
+# 3. compare all entries in 'interface' with the all entries in 'interface_address_to_delete', save all entries that are still valid to variable 'interface_address_to_keep'
+# 4. use list-comparison difference to remove all entries in 'interface_address_to_keep' from the list 'interface_address_to_delete'
+# 5. delete all interface addresses left in 'interface_address_to_delete'
+
+- name: create empty lists to use below 
+  set_fact: 
+    interface_address_to_delete: []
+    interface_address_to_keep: []
+
+# 1.
+- name: get junos interfaces
+  junos_command:
+    commands: show configuration interfaces
+    display: set
+  register: output_junos_interface
+    
+# 2.
+- name: change set to delete
+  set_fact: 
+    interface_address_to_delete: "{{ interface_address_to_delete + [item|regex_replace('^set', 'delete')] }}"
+  when: "'inet address' in item"
+  loop: "{{ output_junos_interface.stdout_lines.0 }}"
+#- debug:
+#    var: interface_address_to_delete
+
+# 3.
+- name: interfaces to keep
+  set_fact:
+    interface_address_to_keep: "{{ interface_address_to_keep + [item.1] }}"
+  when:
+    - item.0.value.interface  in item.1
+    - item.0.value.ipv4       in item.1
+  loop: "{{ interface | dict2items | product(interface_address_to_delete) | list }}"
+  loop_control:
+    label: "{{ item.0.key }}"
+#- debug:
+#    var:  interface_address_to_keep
+
+# 4. 
+- name: remove interface to keep from list of interfaces to remove
+  set_fact:
+    interface_address_to_delete: "{{ interface_address_to_delete | difference(interface_address_to_keep) }}"
+#- debug:
+#    var: interface_address_to_delete
+
+# 5.
+- name: delete interface address
+  junos_config:
+    lines: "{{ item }}"
+    comment: 'Ansible: {{ item }}'
+  loop: "{{ interface_address_to_delete }}"

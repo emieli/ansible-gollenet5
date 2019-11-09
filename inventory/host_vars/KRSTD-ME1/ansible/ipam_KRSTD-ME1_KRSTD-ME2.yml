@@ -1,0 +1,3 @@
+interface:
+  KRSTD-ME1_KRSTD-ME2:
+    ipv4: 10.1.1.4/31

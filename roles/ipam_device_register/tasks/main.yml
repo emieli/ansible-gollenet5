@@ -1,0 +1,66 @@
+---
+
+# https://phpipam.net/api-documentation/
+
+- name: get 'ipam_token'
+  import_role: 
+    name: ipam_token_get
+  run_once: true
+
+- block:  
+
+  # Check if device exists in IPAM. If it does, status_code 200 is returned. If not, then 404 is returned. We want to only continue the playbook for all devices not already in ipam, so we throw an "error" if the status_code is anything but 404, stopping further execution for devices already in ipam.
+  - name: get device info from ipam
+    uri:
+      validate_certs: false
+      url: "{{ ipam_devices }}/?filter_by=hostname&filter_value={{ inventory_hostname }}"
+      method: GET
+      headers: token="{{ ipam_token }}"
+      status_code: 
+        - 404
+        - 200
+    register: output_device
+  # - debug:
+  #     var: output_device
+  - set_fact: ipam_device_id={{ output_device.json.data.0.id }}
+    when: output_device.json.data is defined
+
+  # If device does not exist in IPAM, create it
+  - name: create device in IPAM
+    uri:
+      validate_certs: false
+      url: "{{ ipam_devices }}"
+      method: POST
+      headers: token="{{ ipam_token }}"
+      status_code: 201
+      body_format: json
+      body:
+        hostname: "{{ inventory_hostname }}"
+        sections: "{{ ipam_section }}"
+        type:     "{{ ipam_devicetype }}"
+
+  # We check for our device info again in IPAM now that we just created it, this time we expect status_code 200 as the device should now exist in the IPAM.
+  - name: get device info from ipam
+    uri:
+      validate_certs: false
+      url: "{{ ipam_devices }}/?filter_by=hostname&filter_value={{ inventory_hostname }}"
+      method: GET
+      headers: token="{{ ipam_token }}"
+      status_code: 200
+    register: output_device
+  # - debug:
+  #     msg: "{{ output_device }}"      
+  - set_fact: ipam_device_id={{ output_device.json.data.0.id }}
+
+  when: ipam_device_id is not defined
+  
+- name: make sure folder exists
+  file:
+    path: "{{ folder_hostvars_device_ansible }}"
+    state: directory
+    recurse: yes
+  
+- name: save ipam device info to file
+  template:
+    src: ipam_device.yml.j2
+    dest: "{{ folder_hostvars_device_ansible }}/ipam_device.yml"

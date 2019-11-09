@@ -1,0 +1,10 @@
+---
+
+- name: ipam_vrf_get
+  gather_facts: False
+  connection: local
+  hosts:
+    - PE
+    - PEER
+  roles: 
+    - ipam_vrf_get

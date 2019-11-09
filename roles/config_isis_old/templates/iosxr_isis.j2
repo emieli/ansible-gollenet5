@@ -1,0 +1,24 @@
+prefix-set PFL_ISIS-L2_INTO_ISIS-L1
+  10.1.0.0/24 eq 32
+end-set
+
+route-policy RM_ALLOW_ALL
+  done
+end-policy
+
+route-policy RM_ISIS-L2_INTO_ISIS-L1
+  if destination in PFL_ISIS-L2_INTO_ISIS-L1 then
+    done
+  else
+    drop
+  endif
+end-policy
+
+router isis core
+ log adjacency changes
+ net {{ isis.net_area }}.{{ isis.net_system }}.00
+ address-family ipv4 unicast
+  metric-style wide
+  propagate level 1 into level 2 route-policy RM_ALLOW_ALL
+  propagate level 2 into level 1 route-policy RM_ISIS-L2_INTO_ISIS-L1
+  attached-bit send always-set

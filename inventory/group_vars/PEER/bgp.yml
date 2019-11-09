@@ -1,0 +1,26 @@
+bgp:
+  
+  state:    present
+  as:       7
+  
+  vpnv4:
+    
+    peer_group:
+      
+      PE:
+        state:            present
+        type:             internal
+        remote_as:        7
+        local_address:    "{{ interface['CORE_LOOPBACK']['ipv4'] | ipaddr('address') }}"
+        cluster:          "{{ interface['CORE_LOOPBACK']['ipv4'] | ipaddr('address') }}"
+        neighbor_group:
+          - PE
+      
+      PEER:
+        state:            present
+        type:             internal
+        remote_as:        7
+        local_address:    "{{ interface['CORE_LOOPBACK']['ipv4'] | ipaddr('address') }}"
+        cluster:          "{{ interface['CORE_LOOPBACK']['ipv4'] | ipaddr('address') }}"
+        neighbor_group:
+          - PEER

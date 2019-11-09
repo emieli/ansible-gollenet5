@@ -1,0 +1,18 @@
+---
+
+# format: 
+#  NET = [49.0001].[1921.6812.3001].[00]
+#           area  .    system-ID   . selector (alltid 00)
+
+# Dependency for hwaddr:
+# sudo pip install netaddr
+
+- name: set isis_net_system
+  set_fact: isis_net_system={{ hostvars[inventory_hostname].id | hwaddr('cisco') }}
+
+- name:          isis
+  include_tasks: "{{ ansible_network_os }}.yml"
+  when: 
+    - ansible_network_os  is defined
+    - isis                is defined
+    - isis.state          != "absent"

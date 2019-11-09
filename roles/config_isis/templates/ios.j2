@@ -1,0 +1,7 @@
+router isis core
+ metric-style wide
+ no hello padding
+ log-adjacency-changes
+ mpls ldp sync
+ net {{ isis.net_area }}.{{ isis_net_system }}.00
+ 

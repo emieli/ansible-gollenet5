@@ -1,0 +1,13 @@
+---
+
+- name: save config
+  ios_config:
+    save_when: modified
+  when: 
+    - ansible_network_os == "ios"
+
+- name: save config
+  sros_config:
+    save: yes
+  when: 
+    - ansible_network_os == "sros"

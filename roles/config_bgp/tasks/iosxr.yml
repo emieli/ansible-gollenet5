@@ -1,0 +1,16 @@
+- name: remove bgp
+  iosxr_config:
+    lines: no router bgp
+  when:
+    - (bgp.state == "absent") or (bgp.state == "changed")
+
+- name: configure bgp
+  iosxr_config:
+    src: iosxr.j2
+  when: 
+    - (bgp.state == "present") or (bgp.state == "changed")
+  register: output  
+- name: changes performed
+  debug:
+    msg: "{{ output.commands }}"
+  when: output.commands is defined

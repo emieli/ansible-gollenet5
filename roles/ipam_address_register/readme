@@ -1,0 +1,3 @@
+This role gathers data from hostvars and uses it to register addresses in PHPIPAM
+
+We use the Description field in PHPIPAM write the name of the subnet for that address. This is a shortcut as we otherwise wouldn't know to which subnet the address is registered.

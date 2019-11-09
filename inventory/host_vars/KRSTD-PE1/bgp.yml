@@ -1,0 +1,18 @@
+---
+
+bgp:
+  
+  ipv4_vrf:
+    
+    INTERNET:
+      
+      peer_group:
+        
+        EXTERNAL:
+          state:          present
+          remote_as:      65000
+          route_map_in:   RM_ALLOW_ALL
+          route_map_out:  RM_ALLOW_ALL
+          neighbor_ip:
+            - 1.1.1.1
+            - 1.1.1.2

@@ -1,0 +1,22 @@
+interface:
+
+  BORAS-C2_FALUN-C2:
+    state:              present
+    interface:          Ethernet1/0
+    description:        "UPLINK;ISIS-L2;LDP"
+
+  FALUN-C2_STHLM-C2:
+    state:              present
+    interface:          Ethernet1/1
+    description:        "UPLINK;ISIS-L2;LDP"
+    ipam_subnet_range:  CORE
+    ipam_subnet_owner:  True
+    mask:               31
+
+  FALUN-C2_GAVLE-PE1:
+    state:              present
+    interface:          Ethernet1/2
+    description:        "DOWNLINK;ISIS-L2;LDP"
+    ipam_subnet_range:  CORE
+    ipam_subnet_owner:  True
+    mask:               31

@@ -1,0 +1,7 @@
+{# ipv4 #}
+{% if item.value.ipv4 is defined and item.value.ipv4 != "absent" %}set interfaces {{ item.value.interface }} unit {{ item.value.vlan | default(0) }} family inet address {{ item.value.ipv4 }}{% endif %}
+{% if item.value.ipv4 is defined and item.value.ipv4 == "absent" %}delete interfaces {{ item.value.interface }} unit {{ item.value.vlan | default(0) }} family inet address{% endif %}
+
+{# description #}
+{% if item.value.description is not none and item.value.description != "absent" %}set interfaces {{ item.value.interface }} unit {{ item.value.vlan | default(0) }} description {{ item.value.description }}{% endif %}
+{% if item.value.description is not none and item.value.description == "absent" %}delete interfaces {{ item.value.interface }} unit {{ item.value.vlan | default(0) }} description {{ item.value.description }}{% endif %}

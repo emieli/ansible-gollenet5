@@ -1,0 +1,13 @@
+interface:
+  
+  STHLM-C2_STHLM-PEER1:
+    state:              present
+    interface:          ge-0/0/1
+    vlan:               0
+    description:        "UPLINK;ISIS-L2;LDP"
+
+  STHLM-C1_STHLM-PEER1:
+    state:              present
+    interface:          ge-0/0/0
+    vlan:               0
+    description:        "UPLINK;ISIS-L2;LDP"

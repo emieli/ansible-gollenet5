@@ -1,0 +1,15 @@
+---
+#- block:
+
+- name: get ipam_token
+  uri:
+    validate_certs: false
+    url: "{{ ipam_token_request }}"
+    method: POST
+    user: "{{ ipam_api_user }}"
+    password: "{{ ipam_api_pass | trim }}"
+    force_basic_auth: yes
+  register: output_token # real output at "{{ token.json.data.token }}"
+- set_fact: ipam_token={{ output_token.json.data.token }}
+
+#  when: ipam_token is not defined

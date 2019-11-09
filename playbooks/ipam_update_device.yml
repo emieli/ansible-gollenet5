@@ -1,0 +1,19 @@
+---
+
+- name: ipam_update_device
+  gather_facts: False
+  connection: local
+  hosts: all
+  roles: 
+    #- ipam_device_register
+    #- ipam_subnet_register
+    #- ipam_address_register
+    #- ipam_address_and_mask_save_to_file
+    - config_system
+    - config_interface
+    - config_isis
+    - config_ldp
+    #- config_vrf
+    #- config_bgp
+    # run config_save last
+    - config_save

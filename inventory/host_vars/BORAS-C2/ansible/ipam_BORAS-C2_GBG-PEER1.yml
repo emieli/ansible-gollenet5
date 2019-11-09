@@ -1,0 +1,3 @@
+interface:
+  BORAS-C2_GBG-PEER1:
+    ipv4: 10.0.0.38/31

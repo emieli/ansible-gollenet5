@@ -1,0 +1,67 @@
+---
+
+# format: 
+#  NET = [49.0001].[1921.6812.3001].[00]
+#           area  .    system-ID   . selector (alltid 00)
+
+### START BLOCK TO GENERATE SYSTEM-ID FROM INTERFACE MAC-ADDRESS
+- block:
+  
+  # JUNOS
+  - name: junos mac-address as net_system
+    junos_facts:
+      gather_subset: interfaces
+    register: junos_facts
+    when: ansible_network_os == "junos"
+  - set_fact: mac_address={{ junos_facts.ansible_facts.ansible_net_interfaces['ge-0/0/0']['macaddress'] | hwaddr('cisco') }}
+    when: ansible_network_os == "junos"
+  
+  # ios
+  - name: ios mac-address as net_system
+    ios_facts:
+      gather_subset: interfaces
+    register: ios_facts
+    when: ansible_network_os == "ios"
+  - set_fact: mac_address={{ ios_facts.ansible_facts.ansible_net_interfaces['FastEthernet0/0']['macaddress'] }}
+    when: ansible_network_os == "ios"
+  
+  # iosxr
+  - name: iosxr mac-address as net_system
+    iosxr_facts:
+      gather_subset: interfaces
+    register: iosxr_facts
+    when: ansible_network_os == "iosxr"
+  - set_fact: mac_address={{ iosxr_facts.ansible_facts.ansible_net_interfaces['GigabitEthernet0/0/0/0']['macaddress'] }}
+    when: ansible_network_os == "iosxr"
+  
+  # sros
+  - name: sros mac-address as net_system
+    sros_command:
+      commands: "show port A/1 | match Hardware"
+    register: sros_facts
+    when: ansible_network_os == "sros"
+  - set_fact: mac_address={{ sros_facts.stdout.0 | regex_search('\\S+$') | hwaddr('cisco') }}
+  # - debug:
+  #     var: mac_address
+  
+  # Save to file and add playbook variable so that playbook can continue
+  - name: save isis net_system to file
+    template:
+      src: isis.yml.j2
+      dest: "{{ folder_hostvars_device_ansible }}/isis.yml"
+  # - set_fact: isis.net_system={{ mac_address }}
+  - include_vars:
+      file: "{{ folder_hostvars_device_ansible }}/isis.yml"
+
+  when: 
+    - isis.net_system is not defined
+    - isis            is defined
+    - isis.state      != "absent"
+### END BLOCK
+
+- name:          isis
+  include_tasks: "{{ ansible_network_os }}_isis.yml"
+  when: 
+    - ansible_network_os  is defined
+    - isis                is defined
+    - isis.state          != "absent"

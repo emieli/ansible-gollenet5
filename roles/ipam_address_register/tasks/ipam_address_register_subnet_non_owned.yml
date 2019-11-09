@@ -1,0 +1,52 @@
+---
+
+- name: get non-owned-subnet addresses
+  uri:
+    validate_certs: false
+    url: "{{ ipam_devices }}/{{ ipam_device_id }}/addresses/?filter_by=description&filter_value={{ item.key }}"
+    headers: token="{{ ipam_token }}"
+    method: GET
+    status_code: 
+      - 404
+      - 200
+  register: output_non_owned_addresses
+  when:
+    - item.value.ipam_subnet_owner is not defined
+  loop: "{{ interface | dict2items }}"
+  loop_control:
+    label: "{{ item.key }}"
+#- debug:
+#    msg: "{{ item }}"
+#  loop: "{{ output_non_owned_addresses.results }}"
+
+- name: set_fact subnets_no_address
+  set_fact:
+    subnets_no_address: "{{ subnets_no_address | default({}) | combine({ item.item.key: item.item.value }) }}"
+  when: 
+    - item.skipped   is not defined
+    - item.json.data is not defined
+  loop: "{{ output_non_owned_addresses.results }}"
+  loop_control:
+    label: "{{ item.item.key }}"
+
+# - debug:
+#     msg: "{{ item }}"
+#   loop: "{{ subnets_no_address | dict2items }}"
+
+# Register non-owner address in subnet
+- name: register non-owned-subnet address
+  uri:
+    validate_certs: false
+    url: "{{ ipam_prefix }}/{{ item.key }}/v4/address/"
+    headers: token="{{ ipam_token }}"
+    method: POST
+    status_code: 201
+    body_format: json
+    body:
+      description: "{{ item.key }}"
+      hostname:    "{{ inventory_hostname }}"
+      deviceId:    "{{ ipam_device_id }}"
+  loop: "{{ subnets_no_address | default({}) | dict2items }}"
+  loop_control:
+    label: "{{ item.key }}"
+  changed_when: true

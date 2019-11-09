@@ -1,0 +1,22 @@
+interface {{ item.value.interface }}
+ ip router isis core
+ 
+{# metric #}
+{%   if "CROSSLINK" in item.value.description %}
+ isis metric {{ isis.metric_crosslink }}
+{% elif "DOWNLINK"  in item.value.description %}
+ isis metric {{ isis.metric_downlink  }}
+{% elif "UPLINK"    in item.value.description %}
+ isis metric {{ isis.metric_uplink    }}
+{% endif %}
+
+{# circuit-type #}
+{%   if "ISIS-L2" in item.value.description %}
+ isis circuit-type level-2-only
+ isis network point-to-point
+{% elif "ISIS-L1" in item.value.description %}
+ isis circuit-type level-1
+ isis network point-to-point
+{% elif item.value.description == "absent"  %}
+ no isis circuit-type
+{% endif %}

@@ -1,0 +1,73 @@
+---
+
+# get subnets that we are the owner of
+- name: get owned subnets
+  uri:
+    validate_certs: false
+    url: "{{ ipam_devices }}/{{ ipam_device_id }}/subnets/?filter_by=description&filter_value={{ item.key }}"
+    headers: token="{{ ipam_token }}"
+    method: GET
+    status_code: 
+      - 404
+      - 200
+  register: output_subnets_owned
+  when:
+    - item.value.ipam_subnet_owner is defined
+  loop: "{{ interface | dict2items }}"
+  loop_control:
+    label: "{{ item.key }}"
+# - debug:
+#     msg: "{{ item }}"
+#   loop: "{{ output_subnets_owned.results }}"
+
+- name: create fact subnets_owned
+  set_fact:
+    subnets_owned: "{{ subnets_owned | default({}) | combine({ item.json.data.description: { 'id': item.json.data.id } }) }}"
+  when: 
+    - item.json is defined
+    - item.json.data.description is defined
+  loop: "{{ output_subnets_owned.results }}"
+  loop_control:
+    label: "{{ item.item.key }}"
+# - debug:
+#     var: subnets_owned
+
+# Check if address exists, api returns json.code 404 if not found.
+- name: check if device has a registered address in its own subnets
+  uri:
+    validate_certs: false
+    url: "{{ ipam_subnets }}/{{ item.value.id }}/addresses/?filter_by=deviceId&filter_value={{ ipam_device_id }}"
+    headers: token="{{ ipam_token }}"
+    method: GET
+    status_code: 
+      - 404
+      - 200
+  register: output_address
+  loop: "{{ subnets_owned | default({}) | dict2items }}"
+
+# We save all subnets that we own that we have not yet registered an address for
+- name: create fact subnets_owned_no_address
+  set_fact:
+    subnets_owned_no_address: "{{ subnets_owned_no_address | default({}) | combine({ item.item.key: { 'id': item.item.value.id } }) }}"
+  when: item.json.success|bool == false
+  loop: "{{ output_address.results | default([]) }}"
+  loop_control:
+    label: "{{ item.item.key }}"
+# - debug:
+#     var: subnets_owned_no_address
+
+# Register owner address in subnet, this assures that the owner of the subnet gets the first address in it
+- name: register address in owned subnet
+  uri:
+    validate_certs: false
+    url: "{{ ipam_addresses_first_free }}/{{ item.value.id }}/"
+    headers: token="{{ ipam_token }}"
+    method: POST
+    status_code: 201
+    body_format: json
+    body:
+      description: "{{ item.key }}"
+      hostname:    "{{ inventory_hostname }}"
+      deviceId:    "{{ ipam_device_id }}"
+  loop: "{{ subnets_owned_no_address | default({}) | dict2items }}"
+  changed_when: true

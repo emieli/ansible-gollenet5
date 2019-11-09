@@ -1,0 +1,3 @@
+interface:
+  LUND-C2_MALMO-PEER1:
+    ipv4: 10.0.0.11/31

@@ -1,0 +1,29 @@
+This role fetches IP and mask info from PHPIPAM and saves to file under host_vars/<node>/ansible/<interface-name>.yml
+This saves code and time as data is readily available instead of having to fetch from IPAM every time.
+
+"fact_address_and_mask": {
+    "BORAS-C2_LUND-C2": {
+        "ip": "10.0.0.2", 
+        "mask": "31"
+    }, 
+    "CORE_LOOPBACK": {
+        "ip": "7.0.0.1", 
+        "mask": 32
+    }, 
+    "KRSTD-PE1_LUND-C2": {
+        "ip": "10.0.0.8", 
+        "mask": "31"
+    }, 
+    "LUND-C2_MALMO-C1": {
+        "ip": "10.0.0.0", 
+        "mask": "31"
+    }, 
+    "LUND-C2_MALMO-PEER1": {
+        "ip": "10.0.0.4", 
+        "mask": "31"
+    }, 
+    "LUND-C2_VAXJO-C2": {
+        "ip": "10.0.0.10", 
+        "mask": "31"
+    }
+}

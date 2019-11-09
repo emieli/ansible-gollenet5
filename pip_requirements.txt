@@ -1,0 +1,4 @@
+# sudo pip install -r pip_requirements.txt
+ansible==2.7.13
+netaddr
+ncclient

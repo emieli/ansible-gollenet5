@@ -1,0 +1,8 @@
+---
+
+- name: ipam_subnet_register
+  gather_facts: False
+  connection: local
+  hosts: all
+  roles: 
+    - ipam_subnet_register

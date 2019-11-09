@@ -1,0 +1,8 @@
+---
+
+- name: ipam_device_register
+  gather_facts: False
+  connection: local
+  hosts: all
+  roles: 
+    - ipam_device_register

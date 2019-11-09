@@ -1,0 +1,15 @@
+---
+
+# https://phpipam.net/api-documentation/
+
+- name: get 'ipam_token'
+  import_role: 
+    name: ipam_token_get
+  run_once: true
+  when: ipam_token is not defined
+  
+- name: ipam_address_register_subnet_owned
+  include_tasks: ipam_address_register_subnet_owned.yml
+  
+- name: ipam_address_register_subnet_non_owned
+  include_tasks: ipam_address_register_subnet_non_owned.yml

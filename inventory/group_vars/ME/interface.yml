@@ -1,0 +1,7 @@
+interface:
+  
+  METRO_LOOPBACK:
+    state:        present
+    interface:    system
+    description:  "ISIS"
+    mask:         32

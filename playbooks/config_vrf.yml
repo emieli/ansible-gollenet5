@@ -1,0 +1,10 @@
+---
+
+- name: config_vrf
+  gather_facts: False
+  connection: local
+  hosts: 
+    - PEER
+    - PE
+  roles: 
+    - config_vrf

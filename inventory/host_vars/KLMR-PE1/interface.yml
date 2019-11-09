@@ -1,0 +1,17 @@
+interface:
+
+  KLMR-PE1_VAXJO-C2:
+    state:              present
+    interface:          GigabitEthernet0/0/0/1
+    description:        "UPLINK;ISIS-L2;LDP"
+    ipam_subnet_range:  CORE
+    ipam_subnet_owner:  True
+    mask:               31
+
+  KLMR-PE1_VRNMO-C1:
+    state:              present
+    interface:          GigabitEthernet0/0/0/0
+    description:        "UPLINK;ISIS-L2;LDP"
+    ipam_subnet_range:  CORE
+    ipam_subnet_owner:  True
+    mask:               31

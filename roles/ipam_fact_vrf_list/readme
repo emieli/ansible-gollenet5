@@ -1,0 +1,21 @@
+Gets a list of all VRFs in PHPIPAM and outputs to dict 'fact_vrf_list'
+
+output:
+"fact_vrf_list": {
+    "INTERNET": {
+        "description": "Internet VRF", 
+        "id": "1", 
+        "name": "INTERNET", 
+        "rd": "76543:900", 
+        "rt_export": "76543:900,76543:901",
+        "rt_import": "76543:900,76543:901"
+    }, 
+    "VPN1000": {
+        "description": "VPN1000", 
+        "id": "2", 
+        "name": "VPN1000", 
+        "rd": "76543:1000", 
+        "rt_export": "76543:1000", 
+        "rt_import": "76543:1000"
+    }
+}

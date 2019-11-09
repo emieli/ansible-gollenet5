@@ -1,0 +1,10 @@
+config router Base isis 0 interface "{{ item.key }}" interface-type point-to-point
+
+{# interface metric #}
+{%   if item.value.description is defined and "CROSSLINK" in item.value.description %}
+config router Base isis 0 interface "{{ item.key }}" level 1 metric {{ isis.metric_crosslink }}
+{% elif item.value.description is defined and "DOWNLINK"  in item.value.description %}
+config router Base isis 0 interface "{{ item.key }}" level 1 metric {{ isis.metric_downlink  }}
+{% elif item.value.description is defined and "UPLINK"    in item.value.description %}
+config router Base isis 0 interface "{{ item.key }}" level 1 metric {{ isis.metric_uplink    }}
+{% endif %}

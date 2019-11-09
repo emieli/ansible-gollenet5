@@ -1,0 +1,14 @@
+---
+
+# We call another role to get the dict 'fact_vrf_list', the "run_once" makes it so it's only run once, however the result 'fact_vrf_list' is shared with all hosts
+- name: get 'fact_vrf_list'
+  import_role: 
+    name: ipam_fact_vrf_list
+  run_once: true  
+#- debug:
+#    var: fact_vrf_list
+
+- name:          "{{ ansible_network_os }}"
+  include_tasks: "{{ ansible_network_os }}.yml"
+  when: 
+    - ansible_network_os is defined

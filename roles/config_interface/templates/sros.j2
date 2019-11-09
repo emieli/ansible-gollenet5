@@ -1,0 +1,22 @@
+{# port type #}
+{% if "HYBRID" in item.value.description %}
+configure port {{ item.value.port }} ethernet mode hybrid
+configure port {{ item.value.port }} ethernet encap-type qinq
+configure port {{ item.value.port }} no shutdown
+{% elif "ACCESS" in item.value.description %}
+configure port {{ item.value.port }} ethernet mode access
+configure port {{ item.value.port }} ethernet mtu 1600
+configure port {{ item.value.port }} ethernet encap-type qinq
+configure port {{ item.value.port }} no shutdown
+{% endif %}
+
+{# router interface #}
+{% if item.value.ipv4 is not none %}
+configure router Base interface "{{ item.value.interface }}" address {{ item.value.ipv4 }}
+{% endif %}
+
+{# router port #}
+{% if item.value.port|bool == false %}
+configure router Base interface "{{ item.value.interface }}" port {{ item.value.port }}:{{ item.value.vlan | default("0") }}.{{ item.value.vlan_inner | default("*") }}
+configure router Base interface "{{ item.value.interface }}" no shutdown
+{% endif %}

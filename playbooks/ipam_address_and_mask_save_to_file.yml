@@ -1,0 +1,8 @@
+---
+
+- name: ipam_address_and_mask_save_to_file
+  gather_facts: False
+  connection: local
+  hosts: all
+  roles: 
+    - ipam_address_and_mask_save_to_file

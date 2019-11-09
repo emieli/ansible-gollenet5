@@ -1,0 +1,3 @@
+configure router Base mpls no shutdown
+configure router Base ldp fast-reroute
+configure router Base ldp interface-parameters interface "{{ item.value.interface }}" dual-stack ipv4 no shutdown

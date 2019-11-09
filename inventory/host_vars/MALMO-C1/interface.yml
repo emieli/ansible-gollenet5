@@ -1,0 +1,32 @@
+interface:
+
+  MALMO-C1_MALMO-PEER1:
+    state:              present
+    interface:          Ethernet1/0
+    description:        "DOWNLINK;ISIS-L2;LDP"
+    ipam_subnet_range:  CORE
+    ipam_subnet_owner:  True
+    mask:               31
+
+  LUND-C2_MALMO-C1:
+    state:              present
+    interface:          Ethernet1/1
+    description:        "CROSSLINK;ISIS-L2;LDP"
+
+  GBG-C1_MALMO-C1:
+    state:              present
+    interface:          Ethernet1/2
+    description:        "UPLINK;ISIS-L2;LDP"
+
+  MALMO-C1_VRNMO-C1:
+    state:              present
+    interface:          Ethernet1/3
+    description:        "UPLINK;ISIS-L2;LDP"
+    ipam_subnet_range:  CORE
+    ipam_subnet_owner:  True
+    mask:               31
+
+  KRSTD-PE1_MALMO-C1:
+    state:              present
+    interface:          Ethernet1/4
+    description:        "DOWNLINK;ISIS-L2;LDP"

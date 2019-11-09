@@ -1,0 +1,50 @@
+---
+
+# https://phpipam.net/api-documentation/
+
+- name: get 'ipam_token'
+  import_role: 
+    name: ipam_token_get
+  run_once: true
+  when: ipam_token is not defined
+
+# Check if device is owner of this subnet. If this subnet cannot be found under the device subnets, create it.
+- name: check if device subnet exists in IPAM
+  uri:
+    validate_certs: false
+    url: "{{ ipam_devices }}/{{ ipam_device_id }}/subnets/?filter_by=description&filter_value={{ item.key }}"
+    headers: token="{{ ipam_token }}"
+    method: GET
+    status_code: 
+      - 200
+      - 404
+  register: output_subnet
+  when: item.value.ipam_subnet_owner is defined
+  loop: "{{ interface | dict2items }}"
+  loop_control:
+    label: "{{ item.key }}"
+# - debug:
+#     msg: "{{ item }}"
+#   loop: "{{ output_subnet.results }}"
+
+# Register subnet using prefix controller if not already found in ipam
+- name: register subnet in ipam
+  uri:
+    validate_certs: false
+    url: "{{ ipam_prefix }}/{{ item.item.value.ipam_subnet_range }}/v4/{{ item.item.value.mask }}/"
+    headers: token="{{ ipam_token }}"
+    method: POST
+    status_code: 201
+    body_format: json
+    body:
+      description:                  "{{ item.item.key }}"
+      custom_customer_type:         "{{ item.item.key }}"
+      custom_customer_address_type: "{{ item.item.key }}"
+      device:                       "{{ ipam_device_id }}"
+      showName:                     1
+  when: 
+    - item.json              is defined
+    - item.json.success|bool == false
+  loop: "{{ output_subnet.results }}"
+  loop_control:
+    label: "{{ item.item.key }}"

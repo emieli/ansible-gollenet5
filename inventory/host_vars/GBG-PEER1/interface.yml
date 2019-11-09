@@ -1,0 +1,13 @@
+interface:
+  
+  BORAS-C2_GBG-PEER1:
+    state:              present
+    interface:          ge-0/0/1
+    vlan:               0
+    description:        "UPLINK;ISIS-L2;LDP"
+
+  GBG-C1_GBG-PEER1:
+    state:              present
+    interface:          ge-0/0/0
+    vlan:               0
+    description:        "UPLINK;ISIS-L2;LDP"

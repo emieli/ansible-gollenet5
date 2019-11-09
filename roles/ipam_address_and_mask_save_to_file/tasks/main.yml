@@ -1,0 +1,77 @@
+---
+
+# https://phpipam.net/api-documentation/
+
+- name: get 'ipam_token'
+  import_role: 
+    name: ipam_token_get
+  run_once: true
+  when: ipam_token is not defined
+
+# get IP-address and put in fact_address
+- name: get addresses from ipam
+  uri:
+    validate_certs: false
+    url: "{{ ipam_devices }}/{{ ipam_device_id }}/addresses/"
+    method: GET
+    headers: token="{{ ipam_token }}"
+    status_code: 200
+  register: output_address
+- set_fact: output_address={{ output_address.json.data | default([]) }}
+- name: fact_address
+  set_fact:
+    fact_address: "{{ fact_address | default({}) | combine({ item.description: {'ip': item.ip } }) }}"
+  loop: "{{ output_address }}"
+  loop_control:
+    label: "{{ item.description }}"
+#- debug:
+#    var: fact_address
+
+# get subnet mask and put in fact_address
+- name: get subnet from ipam
+  uri:
+    validate_certs: false
+    url: "{{ ipam_prefix }}/{{ item.key }}/"
+    headers: token="{{ ipam_token }}"
+    method: GET
+    status_code: 200
+  register: output_subnet
+  loop: "{{ fact_address | dict2items }}"
+- name: fact_mask   
+  set_fact:
+    fact_mask: "{{ fact_mask | default([]) | combine({ item.json.data.0.description: {'mask': item.json.data.0.mask} }) }}"
+  loop: "{{ output_subnet.results }}"
+  loop_control:
+    label: "{{ item.json.data.0.description }}"
+  
+# combine IP-address and mask from ipam into one dict  
+- name: fact_address_and_mask from ipam
+  set_fact:
+    fact_address_and_mask: "{{ fact_address_and_mask | default([]) | combine({ item.key: {'ip': fact_address[item.key]['ip'], 'mask': fact_mask[item.key]['mask']} }) }}"
+  loop: "{{ fact_address | dict2items }}"
+  loop_control:
+    label: "{{ item.key }}"
+#- debug:
+#    var: fact_address_and_mask
+
+# combine IP-address and mask from interface.yml into one dict:
+- name: fact_address_and_mask override with static mask
+  set_fact:
+    fact_address_and_mask: "{{ fact_address_and_mask | default([]) | combine({ item.key: {'ip': fact_address[item.key]['ip'], 'mask': interface[item.key]['mask']} }) }}"
+  when: interface[item.key]['mask'] is defined
+  loop: "{{ fact_address | dict2items }}"
+  loop_control:
+    label: "{{ item.key }}"
+# - debug:
+#     var: fact_address_and_mask
+
+- name: save ipam interface info to file
+  template:
+    src: interface.yml.j2
+    dest: "{{ folder_hostvars_device_ansible }}/ipam_{{ item.key }}.yml"
+  loop: "{{ fact_address_and_mask | dict2items }}"
+
+- name: load variable files we just saved
+  include_vars:
+    file: "{{ folder_hostvars_device_ansible }}/ipam_{{ item.key }}.yml"
+  loop: "{{ fact_address_and_mask | dict2items }}"

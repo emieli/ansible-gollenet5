@@ -1,0 +1,15 @@
+---
+
+bgp:
+  
+  ipv4_vrf:
+    
+    INTERNET:
+      
+      peer_group:
+        
+        AS2:
+          type:           external
+          remote_as:      2
+          neighbor_ip:
+            - 1.0.2.1

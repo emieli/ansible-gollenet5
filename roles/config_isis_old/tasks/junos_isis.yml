@@ -1,0 +1,26 @@
+---
+
+- name: junos isis
+  junos_config:
+    src: junos_isis.j2
+    src_format: set
+  register: output  
+- name: changes performed
+  debug:
+    msg: "{{ output.commands }}"
+  when: output.commands is defined
+
+
+- name: junos isis interface
+  junos_config:
+    src: junos_isis_interface.j2
+    src_format: set
+  when: '"ISIS" in item.value.description'
+  loop: "{{ interface | dict2items }}"
+  loop_control:
+    label: "{{ item.key }}"
+  register: output  
+- name: changes performed
+  debug:
+    msg: "{{ output.commands }}"
+  when: output.commands is defined

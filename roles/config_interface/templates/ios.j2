@@ -1,0 +1,25 @@
+interface {{ item.value.interface }}
+
+{# description #}
+{% if item.value.description is not none and item.value.description != "absent" %} 
+ description {{ item.value.description }}
+{% elif item.value.description is not none and item.value.description == "absent" %}
+ no description 
+{% endif %}
+
+{# dot1q #}
+{% if item.value.vlan is defined %}
+ encapsulation dot1q {{ item.value.vlan.number }}
+{% endif %}
+
+{# vrf #}
+{% if item.value.vrf is defined %}
+ vrf forwarding {{ item.value.vrf.name }}
+ {% endif %}
+
+{# ipv4 #}
+{% if item.value.ipv4 is defined and item.value.ipv4 != "absent" %}
+ ip address {{ item.value.ipv4 | ipaddr('address') }} {{ item.value.ipv4 | ipaddr('netmask') }}
+{% elif item.value.ipv4 is defined and item.value.ipv4 == "absent" %}
+ no ip address 
+{% endif %}

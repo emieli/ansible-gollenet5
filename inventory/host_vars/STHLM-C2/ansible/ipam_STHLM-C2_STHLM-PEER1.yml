@@ -1,0 +1,3 @@
+interface:
+  STHLM-C2_STHLM-PEER1:
+    ipv4: 10.0.0.22/31

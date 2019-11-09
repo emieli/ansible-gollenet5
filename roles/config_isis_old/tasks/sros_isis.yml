@@ -1,0 +1,24 @@
+---
+
+- name: sros isis
+  sros_config:
+    src: sros_isis.j2
+  register: output  
+- name: changes performed
+  debug:
+    msg: "{{ output.commands }}"
+  when: output.commands is defined
+
+
+- name: sros isis interface
+  sros_config:
+    src: sros_isis_interface.j2
+  when: '"ISIS-" in item.value.description'
+  loop: "{{ interface | dict2items }}"
+  loop_control:
+    label: "{{ item.key }}"
+  register: output  
+- name: changes performed
+  debug:
+    msg: "{{ output.commands }}"
+  when: output.commands is defined

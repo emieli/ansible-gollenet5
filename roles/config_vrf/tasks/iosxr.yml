@@ -1,0 +1,10 @@
+---
+
+- name: vrf
+  iosxr_config:
+    src: iosxr.j2
+  when:
+    - item.value.vrf is defined
+  loop: "{{ interface | dict2items }}"
+  loop_control:
+    label: "{{ item.value.vrf | default() }}"

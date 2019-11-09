@@ -1,0 +1,24 @@
+---
+
+- name: system
+  iosxr_config:
+    lines:
+      - cdp
+      - line console width 300
+      - line console length 0
+      - logging console informational
+      - logging monitor debugging
+      - logging buffered debugging
+      
+- name: banner
+  iosxr_banner:
+    banner: motd
+    text: |
+      ##################################
+      ###                            ###
+      ###         golle5.net         ###
+      ###     MANAGED BY ANSIBLE     ###
+      ### DO NOT MAKE CONFIG CHANGES ###
+      ###                            ###
+      ##################################
+    state: present

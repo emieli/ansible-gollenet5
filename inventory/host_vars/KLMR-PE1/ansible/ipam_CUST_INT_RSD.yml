@@ -1,0 +1,3 @@
+interface:
+  CUST_INT_RSD:
+    ipv4: 7.1.12.1/22

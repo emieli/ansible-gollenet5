@@ -1,0 +1,7 @@
+interface:
+  
+  CORE_LOOPBACK:
+    state:        present
+    interface:    Loopback0
+    description:  "ROUTERID;ISIS"
+    mask:         32

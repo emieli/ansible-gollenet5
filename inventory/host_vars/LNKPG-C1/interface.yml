@@ -1,0 +1,22 @@
+interface:
+
+  LNKPG-C1_VRNMO-C1:
+    state:              present
+    interface:          Ethernet1/0
+    description:        "UPLINK;ISIS-L2;LDP"
+    ipam_subnet_range:  CORE
+    ipam_subnet_owner:  True
+    mask:               31
+
+  LNKPG-C1_STHLM-C1:
+    state:              present
+    interface:          Ethernet1/2
+    description:        "UPLINK;ISIS-L2;LDP"
+    ipam_subnet_range:  CORE
+    ipam_subnet_owner:  True
+    mask:               31
+
+  GBG-C1_LNKPG-C1:
+    state:              present
+    interface:          Ethernet1/1
+    description:        "UPLINK;ISIS-L2;LDP"

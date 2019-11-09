@@ -1,0 +1,3 @@
+interface:
+  METRO_LOOPBACK:
+    ipv4: 10.1.0.1/32

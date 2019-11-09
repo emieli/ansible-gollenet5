@@ -1,0 +1,36 @@
+configures BGP
+
+variable structure loaded from group_vars/host_vars folder, usually from a file named bgp.yml:
+
+(Below table edited in Sublime Text 3 using package https://packagecontrol.io/packages/Table%20Editor.
+  ctrl+j + Enter = Make cell one row larger, to give you more text to write in
+  ctrl+k + Enter = Create new table row
+  
+  Initially create table:
+  | name | phone |
+  |- <press tab>
+)
+
+|               Variable              |  Type  |     Accepted Values      |                      Description                       |
+|-------------------------------------|--------|--------------------------|--------------------------------------------------------|
+| bgp.state                           | string | (present/changed/absent) | present = configure BGP on node                        |
+|                                     |        |                          | absent  = remove BGP config from node                  |
+|                                     |        |                          | changed = remove and then configure BGP                |
+|-------------------------------------|--------|--------------------------|--------------------------------------------------------|
+| bgp.as                              | int    | (0-65535)                | Local AS                                               |
+|-------------------------------------|--------|--------------------------|--------------------------------------------------------|
+| bgp.vpnv4.peer_group.name           | string | a-zA-Z_                  | Name of BGP vpnv4 peer group                           |
+|-------------------------------------|--------|--------------------------|--------------------------------------------------------|
+| bgp.vpnv4.peer_group.type           | string | (internal/external)      | Used by Juniper to differentiate between iBGP and eBGP |
+|-------------------------------------|--------|--------------------------|--------------------------------------------------------|
+| bgp.vpnv4.peer_group.remote_as      | int    | (0-65535)                | Required when type is external                         |
+|-------------------------------------|--------|--------------------------|--------------------------------------------------------|
+| bgp.vpnv4.peer_group.local_address  | ip     | (x.x.x.x)                | Used by Juniper to set 'update-source' IP-address.     |
+|                                     |        |                          | Different from Cisco, where update interface is set.   |
+|-------------------------------------|--------|--------------------------|--------------------------------------------------------|
+| bgp.vpnv4.peer_group.cluster        | ip     | (x.x.x.x)                | Setting cluster ID makes it a route-reflector          |
+|-------------------------------------|--------|--------------------------|--------------------------------------------------------|
+| bgp.vpnv4.peer_group.neighbor_group | list   | list of strings          | Names of ansible host groups to dynamically            |
+|                                     |        |                          | build adjacencies to                                   |
+|-------------------------------------|--------|--------------------------|--------------------------------------------------------|
+|                                     |        |                          |                                                        |

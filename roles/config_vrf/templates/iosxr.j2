@@ -1,0 +1,58 @@
+{# config VRF #}
+vrf {{ item.value.vrf }}
+ address-family ipv4 unicast
+  no import route-target
+  no export route-target
+{% for rt in fact_vrf_list[item.value.vrf]['rt_import'].split(",")  %}
+  import route-target {{ rt }}
+{% endfor %}
+{% for rt in fact_vrf_list[item.value.vrf]['rt_export'].split(",")  %}
+  export route-target {{ rt }}
+{% endfor %}
+
+{# config VRF route-distinguisher #}
+router bgp {{ bgp.as }}
+ vrf {{ item.value.vrf }}
+  rd {{ fact_vrf_list[item.value.vrf]['rd'] }}
+
+{# START VRF INTERNET REDIST CONNECTED #}
+{% if item.value.vrf == "INTERNET" %}
+prefix-set PFL_LOCAL_AS
+  7.0.0.0/8
+end-set
+!
+community-set CL_LOCAL_AS
+  7:100
+end-set
+!
+prefix-set PFL_LOCAL_AS_INTERNAL
+  7.0.0.0/8 le 32
+end-set
+!
+community-set CL_LOCAL_AS_INTERNAL
+  no-export
+end-set
+!
+route-policy RM_BGP_REDIST_CONNECTED
+  if destination in PFL_LOCAL_AS then
+    set community CL_LOCAL_AS
+    set med 100
+    set origin igp
+    done
+  elseif destination in PFL_LOCAL_AS_INTERNAL then
+    set community CL_LOCAL_AS_INTERNAL
+    set origin igp
+    set med 100
+    done
+  else
+    drop
+  endif
+end-policy
+!
+router bgp {{ bgp.as }}
+ !
+ vrf INTERNET
+  address-family ipv4 unicast
+   redistribute connected route-policy RM_BGP_REDIST_CONNECTED
+{% endif %}
+{# END VRF INTERNET REDIST CONNECTED #}

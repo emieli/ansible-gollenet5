@@ -1,0 +1,19 @@
+interface:
+
+  JNKPG-ME1_JNKPG-PE1:
+    state:              present
+    interface:          1/1/1
+    vlan:               0
+    description:        "UPLINK;ISIS-L1;LDP;HYBRID"
+    ipam_subnet_range:  METRO
+    ipam_subnet_owner:  True
+    mask:               31
+
+  JNKPG-ME1_JNKPG-ME2:
+    state:              present
+    interface:          1/1/2
+    vlan:               0
+    description:        "CROSSLINK;ISIS-L1;LDP;HYBRID"
+    ipam_subnet_range:  METRO
+    ipam_subnet_owner:  True
+    mask:               31

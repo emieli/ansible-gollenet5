@@ -1,0 +1,3 @@
+interface:
+  STHLM-C1_STHLM-C2:
+    ipv4: 10.0.0.27/31

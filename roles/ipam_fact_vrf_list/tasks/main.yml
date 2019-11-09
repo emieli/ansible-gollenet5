@@ -1,0 +1,37 @@
+---
+
+# https://phpipam.net/api-documentation/
+
+- name: get 'ipam_token'
+  import_role: 
+    name: ipam_token_get
+  run_once: true
+  when: ipam_token is not defined
+
+- name: get VRFs
+  uri:
+    validate_certs: false
+    url: "{{ ipam_vrf }}/"
+    headers: token="{{ ipam_token }}"
+    method: GET
+    status_code:
+      - 200
+  register: output_vrf_list
+# - debug:
+#     var: output_vrf_list
+
+- name: set_fact fact_vrf_list
+  set_fact: 
+    fact_vrf_list: "{{ fact_vrf_list | default({}) | combine({ item.name: { 
+      'id': item.vrfId, 
+      'name': item.name, 
+      'rd': item.rd, 
+      'description': item.description, 
+      'rt_import': item.custom_rt_import, 
+      'rt_export': item.custom_rt_export 
+    } }) }}"
+  loop: "{{ output_vrf_list.json.data }}"
+  loop_control:
+    label: "{{ item.name }}"
+# - debug:
+#     var: fact_vrf_list

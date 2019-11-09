@@ -1,0 +1,63 @@
+---
+#
+# https://docs.ansible.com/ansible/latest/modules/ios_interface_module.html#ios-interface-module
+#
+
+- name: get interface facts
+  ios_facts:
+    gather_subset: 
+      - interfaces
+    
+- name: remove old ip address
+  ios_config:
+    lines: no ip address
+    parents: interface {{ item.value.interface }}
+  when: 
+    - ansible_net_interfaces[item.value.interface]                        is defined
+    - ansible_net_interfaces[item.value.interface]['ipv4'][0]             is defined
+    - ansible_net_interfaces[item.value.interface]['ipv4'][0]['address']  is defined
+    - ansible_net_interfaces[item.value.interface]['ipv4'][0]['address']  != item.value.ipv4 | ipaddr('address')
+  loop: "{{ interface | dict2items }}"
+  loop_control:
+    label: "{{ item.key }}"
+
+- name: no interface
+  ios_config:
+    lines: 
+      - no interface {{ item.value.interface }}
+      - default interface {{ item.value.interface }}
+  when:
+    - item.value.state == "absent"
+  loop: "{{ interface | dict2items }}"
+
+- name: interface
+  ios_config:
+    src: ios.j2
+  when:
+    - item.value.state != "absent"
+  loop: "{{ interface | dict2items }}"
+  loop_control:
+    label: "{{ item.key }}"
+  register: output
+
+- set_fact: output_updates={{ output_updates | default([]) + item.commands }}
+  when: item.commands is defined
+  loop: "{{ output.results }}"
+  loop_control:
+    label: "{{ item.item.key }}"
+    
+- name: changes performed
+  debug:
+    msg: "{{ output_updates }}"
+  when: output_updates is defined
+
+  
+- name: interface no shut
+  ios_config:
+    lines: 
+      - no shutdown
+    parents: interface {{ item.key }}
+  when:
+    - item.value.operstatus == "administratively down"
+    - item.value.description is string
+  loop: "{{ ansible_net_interfaces | dict2items }}"

@@ -1,0 +1,12 @@
+- name: banner
+  junos_banner:
+    banner: login
+    text: |
+      ##################################
+      ###                            ###
+      ###         golle5.net         ###
+      ###     MANAGED BY ANSIBLE     ###
+      ### DO NOT MAKE CONFIG CHANGES ###
+      ###                            ###
+      ##################################
+    state: present

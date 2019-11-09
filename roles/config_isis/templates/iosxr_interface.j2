@@ -1,0 +1,35 @@
+router isis core
+ interface {{ item.value.interface }}
+
+{% if "CORE_LOOPBACK" in item.key %}
+  passive
+  address-family ipv4 unicast
+{% elif "CORE_LOOPBACK" not in item.key %}
+  point-to-point
+  hello-padding disable
+  address-family ipv4 unicast 
+   mpls ldp sync
+{% endif %}
+  
+{# circuit-type #}
+{%   if item.value.description is defined and "ISIS-L2" in item.value.description    %}  
+  circuit-type level-2-only
+{% elif item.value.description is defined and "ISIS-L1" in item.value.description    %}
+  circuit-type level-1
+{% elif item.value.description is defined and "ISIS-L1-L2" in item.value.description %}
+  circuit-type level-1-2
+{% elif item.value.description is defined and item.value.description == "absent"     %}
+  no circuit-type
+{% endif %}
+
+   
+{# interface metric #}
+  address-family ipv4 unicast 
+{%   if item.value.description is defined and "CROSSLINK" in item.value.description %}
+   metric {{ isis.metric_crosslink }}
+{% elif item.value.description is defined and "DOWNLINK" in item.value.description  %}
+   metric {{ isis.metric_downlink  }}
+{% elif item.value.description is defined and "UPLINK" in item.value.description    %}
+   metric {{ isis.metric_uplink    }}
+{% endif %}
+

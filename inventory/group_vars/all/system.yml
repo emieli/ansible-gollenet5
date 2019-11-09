@@ -1,0 +1,6 @@
+---
+
+folder_host_vars: /etc/ansible/gollenet5/inventory/host_vars
+# dest_path_ipam_device_yml: "{{ folder_host_vars }}/{{ inventory_hostname }}/ansible/ipam_device.yml"
+folder_hostvars_device_ansible: "{{ folder_host_vars }}/{{ inventory_hostname }}/ansible"
+folder_group_vars_all_ansible: "/etc/ansible/gollenet5/inventory/group_vars/all/ansible"

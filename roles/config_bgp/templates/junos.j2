@@ -1,0 +1,41 @@
+set routing-options autonomous-system {{ bgp.as }}
+set protocols bgp log-updown
+
+{# START VPNV4 PEER-GROUP #}
+{% for pg_key, pg_value in bgp.vpnv4.peer_group.iteritems() if bgp.vpnv4.peer_group is defined %}
+set protocols bgp group {{ pg_key }} type {{ pg_value.type }}
+set protocols bgp group {{ pg_key }} family inet-vpn unicast
+
+{#  update-source #}
+{%  if pg_value.local_address is defined %}
+set protocols bgp group {{ pg_key }} local-address {{ pg_value.local_address }}
+{%  endif %}
+
+{#  cluster ID, will make it a route-reflector #}
+{%  if pg_value.cluster is defined %}
+set protocols bgp group {{ pg_key }} cluster {{ pg_value.cluster }}
+{%  endif %}
+
+{#  Loops through neighbor groups, configuring each IP-address #}
+{%  for neighbor_group in pg_value.neighbor_group if pg_value.neighbor_group is defined %}
+{%   for host in groups[neighbor_group] if host != inventory_hostname %}
+set protocols bgp group {{ pg_key }} neighbor {{ hostvars[host]['interface']['CORE_LOOPBACK']['ipv4'] | ipaddr('address') }}
+{%   endfor %}
+{%  endfor %}
+{% endfor %}
+{# END VPNV4 PEER-GROUP #}
+
+{# START IPV4 VRF PEER-GROUP #}
+{% if bgp.ipv4_vrf is defined %}
+{%  for vrf in bgp.ipv4_vrf %}
+{%   for pg_key, pg_value in bgp.ipv4_vrf[vrf].peer_group.iteritems() if bgp.ipv4_vrf[vrf].peer_group is defined %}
+set routing-instances {{ vrf }} protocols bgp group {{ pg_key }} family inet unicast
+set routing-instances {{ vrf }} protocols bgp group {{ pg_key }} type {{ pg_value.type }}
+set routing-instances {{ vrf }} protocols bgp group {{ pg_key }} peer-as {{ pg_value.remote_as }}
+{%    for host in pg_value.neighbor_ip if pg_value.neighbor_ip is defined %}
+set routing-instances {{ vrf }} protocols bgp group {{ pg_key }} neighbor {{ host }}
+{%    endfor %}
+{%   endfor %}
+{%  endfor %}
+{% endif %}
+{# END IPV4 VRF PEER-GROUP #}

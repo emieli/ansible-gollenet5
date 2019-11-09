@@ -1,0 +1,38 @@
+Ansible role to create subnets in PHPIPAM.
+
+https://phpipam.net/api-documentation/
+
+We use custom subnet field "customer_type" (varchar, 40 characters), which in the API translates to "custom_customer_type". This custom field is required for the prefix controller, and it allows us to find a subnet based on its name
+
+hostvars file: /etc/ansible/gollenet5/inventory/host_vars/GBG-PE1/interface.yml
+### START
+interface:
+
+  MALMO-PEER1_LUND-C2:
+    state:              present
+    interface:          ge-0/0/1
+    description:        "UPLINK;OSPF;LDP"
+    ipam_master_subnet: CORE
+
+  MALMO-PEER1_MALMO-C1:
+    state:              present
+    interface:          ge-0/0/0
+    description:        "UPLINK;OSPF;LDP"
+    ipam_master_subnet: CORE
+    
+### END
+
+In PHPIPAM we have this setup:
+7.0.0.0/8  - root public
+  7.0.0.0/24  - CORE_LOOPBACK
+10.0.0.0/8 - root internal
+  10.0.0.0/16 - Core Linknets (custom_customer_type=CORE)
+    10.0.0.0/31 - GBG-PE1_GBG-PE2
+    ...
+    10.0.255.254/31
+  10.1.0.0/16 - Metro Linknets (custom_customer_type=METRO)
+  ... etc
+  
+10.0/16 and 10.1/16 respectively are used to allocate /31 subnets for linknets between nodes, 10.0/16 for Core nodes, 10.1/16 for Metro nodes. 
+
+PHIPAM uses the field "custom_customer_type" to find these two supernets above. 10.0/16 has value "CORE" set in "custom_customer_type", which matches the "ipam_master_subnet" value in the interface.yml config file.

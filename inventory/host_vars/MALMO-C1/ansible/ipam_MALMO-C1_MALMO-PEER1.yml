@@ -1,0 +1,3 @@
+interface:
+  MALMO-C1_MALMO-PEER1:
+    ipv4: 10.0.0.8/31

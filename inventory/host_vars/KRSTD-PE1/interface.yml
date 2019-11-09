@@ -1,0 +1,22 @@
+interface:
+
+  KRSTD-PE1_LUND-C2:
+    state:              present
+    interface:          GigabitEthernet0/0/0/1
+    description:        "UPLINK;ISIS-L2;LDP"
+    ipam_subnet_range:  CORE
+    ipam_subnet_owner:  True
+    mask:               31
+
+  KRSTD-PE1_MALMO-C1:
+    state:              present
+    interface:          GigabitEthernet0/0/0/0
+    description:        "UPLINK;ISIS-L2;LDP"
+    ipam_subnet_range:  CORE
+    ipam_subnet_owner:  True
+    mask:               31
+
+  KRSTD-ME1_KRSTD-PE1:
+    state:              present
+    interface:          GigabitEthernet0/0/0/8
+    description:        "UPLINK;ISIS-L1;LDP;HYBRID"

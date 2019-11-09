@@ -1,0 +1,49 @@
+{% if "ISIS" in item.value.description %}
+set protocols isis interface {{ item.value.interface }}.{{ item.value.vlan | default("0") }}
+{% endif %}
+
+{# PGA problem med att konfa "family iso" direkt på ett interface, använder vi en apply-group för att ta oss runt den cpbuggen, cphorhelvetes jävla skitmodul#}
+set groups ISIS interfaces <*> unit 0 family iso
+set interfaces {{ item.value.interface }} apply-groups ISIS
+
+{# ISIS-L1 #}
+{% if "ISIS-L1" in item.value.description %}
+set groups ISIS-L1 protocols isis interface <*> hello-padding disable
+set groups ISIS-L1 protocols isis interface <*> ldp-synchronization
+set groups ISIS-L1 protocols isis interface <*> point-to-point
+set groups ISIS-L1 protocols isis interface <*> level 2 disable
+
+{# metric #}
+{% if "CROSSLINK" in item.value.description %}
+set protocols isis interface {{ item.value.interface }}.{{ item.value.vlan | default("0") }} level 1 metric {{ isis.metric_crosslink }}
+{% endif %}
+{% if "DOWNLINK" in item.value.description  %}
+set protocols isis interface {{ item.value.interface }}.{{ item.value.vlan | default("0") }} level 1 metric {{ isis.metric_downlink  }}
+{% endif %}
+{% if "UPLINK" in item.value.description    %}
+set protocols isis interface {{ item.value.interface }}.{{ item.value.vlan | default("0") }} level 1 metric {{ isis.metric_uplink    }}
+{% endif %}
+
+set protocols isis interface {{ item.value.interface }}.{{ item.value.vlan | default("0") }} apply-groups ISIS-L1
+{% endif %}
+
+{# ISIS-L2 #}
+{% if "ISIS-L2" in item.value.description %}
+set groups ISIS-L2 protocols isis interface <*> hello-padding disable
+set groups ISIS-L2 protocols isis interface <*> ldp-synchronization
+set groups ISIS-L2 protocols isis interface <*> point-to-point
+set groups ISIS-L2 protocols isis interface <*> level 1 disable
+
+{# metric #}
+{% if "CROSSLINK" in item.value.description %}
+set protocols isis interface {{ item.value.interface }}.{{ item.value.vlan | default("0") }} level 2 metric {{ isis.metric_crosslink }}
+{% endif %}
+{% if "DOWNLINK" in item.value.description  %}
+set protocols isis interface {{ item.value.interface }}.{{ item.value.vlan | default("0") }} level 2 metric {{ isis.metric_downlink  }}
+{% endif %}
+{% if "UPLINK" in item.value.description    %}
+set protocols isis interface {{ item.value.interface }}.{{ item.value.vlan | default("0") }} level 2 metric {{ isis.metric_uplink    }}
+{% endif %}
+
+set protocols isis interface {{ item.value.interface }}.{{ item.value.vlan | default("0") }} apply-groups ISIS-L2
+{% endif %}

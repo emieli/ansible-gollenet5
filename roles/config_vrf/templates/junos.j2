@@ -1,0 +1,15 @@
+set routing-instances {{ item.value.vrf }} instance-type vrf
+set routing-instances {{ item.value.vrf }} vrf-table-label
+set routing-instances {{ item.value.vrf }} interface {{ item.value.interface }}
+set routing-instances {{ item.value.vrf }} route-distinguisher {{ fact_vrf_list[item.value.vrf]['rd'] }}
+
+delete routing-instances {{ item.value.vrf }} vrf-target
+{% for rt in fact_vrf_list[item.value.vrf]['rt_import'].split(",")  %}
+set routing-instances {{ item.value.vrf }} vrf-target import target:{{ rt }}
+{% endfor %}
+{% for rt in fact_vrf_list[item.value.vrf]['rt_export'].split(",")  %}
+set routing-instances {{ item.value.vrf }} vrf-target export target:{{ rt }}
+{% endfor %}
+
+{# BGP ASN > 65535 requires an 'L' after it, like this: target:67543L:900
+	set routing-instances {{ item.value.vrf }} vrf-target export target:{{ rt | regex_replace(':', 'L:') }} #}

@@ -1,0 +1,49 @@
+---
+
+# - debug:
+#     var: item
+#   when: item.value.port|length > 0
+#   loop: "{{ interface | dict2items }}"
+
+# "item.value.port|bool == false" <-- when 'item.value.port' is not null. Trippy as fuck, but it works
+- name: get port config
+  sros_command:
+    commands: show port {{ item.value.port }}
+  register: output_ports
+  when: item.value.port|bool == false
+  loop: "{{ interface | dict2items }}"
+  loop_control:
+    label: "{{ item.key }}"
+
+- name: port shutdown
+  sros_config:
+    lines: 
+      - shutdown
+      - ethernet no mtu
+    parents: configure port {{ item.item.value.port }}
+  when:
+    - item.skipped is not defined
+    - '(("HYBRID" in item.item.value.description) and ("Configured Mode    : hybrid" not in item.stdout.0) or ("Encap Type       : QinQ" not in item.stdout.0)) or 
+       (("ACCESS" in item.item.value.description) and ("Configured Mode    : access" not in item.stdout.0) or ("Encap Type       : QinQ" not in item.stdout.0))'
+  loop: "{{ output_ports.results }}"
+  loop_control:
+    label: "{{ item.item.key }}"
+
+- name: config port and router interface
+  sros_config:
+    src: sros.j2
+  loop: "{{ interface | dict2items }}"
+  loop_control:
+    label: "{{ item.key }}"
+  register: output
+
+- set_fact: output_updates={{ output_updates | default([]) + item.commands }}
+  when: item.commands is defined
+  loop: "{{ output.results }}"
+  loop_control:
+    label: "{{ item.item.key }}"
+    
+- name: changes performed
+  debug:
+    msg: "{{ output_updates }}"
+  when: output_updates is defined

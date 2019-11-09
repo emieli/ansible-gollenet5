@@ -1,0 +1,21 @@
+interface:
+
+  LNKPG-C1_VRNMO-C1:
+    state:              present
+    interface:          Ethernet1/2
+    description:        "UPLINK;ISIS-L2;LDP"
+
+  MALMO-C1_VRNMO-C1:
+    state:              present
+    interface:          Ethernet1/1
+    description:        "UPLINK;ISIS-L2;LDP"
+
+  JNKPG-PE1_VRNMO-C1:
+    state:              present
+    interface:          Ethernet1/4
+    description:        "DOWNLINK;ISIS-L2;LDP"
+
+  KLMR-PE1_VRNMO-C1:
+    state:              present
+    interface:          Ethernet1/3
+    description:        "DOWNLINK;ISIS-L2;LDP"

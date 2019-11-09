@@ -1,0 +1,17 @@
+interface:
+  
+  CORE_LOOPBACK:
+    state:              present
+    interface:          Loopback0
+    description:        "ROUTERID;ISIS"
+    mask:               32
+  
+  CUST_INT_RSD:
+    state:              present
+    interface:          GigabitEthernet0/0/0/8.100
+    vlan:               100
+    description:        "CUSTOMER-INTERNET-RESIDENTIAL"
+    ipam_subnet_range:  MASTER_INT_RSD
+    ipam_subnet_owner:  True
+    mask:               22
+    vrf:                INTERNET

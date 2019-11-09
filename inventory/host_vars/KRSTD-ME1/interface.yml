@@ -1,0 +1,19 @@
+interface:
+
+  KRSTD-ME1_KRSTD-PE1:
+    state:              present
+    interface:          1/1/1
+    vlan:               0
+    description:        "UPLINK;ISIS-L1;LDP;HYBRID"
+    ipam_subnet_range:  METRO
+    ipam_subnet_owner:  True
+    mask:               31
+
+  KRSTD-ME1_KRSTD-ME2:
+    state:              present
+    interface:          1/1/2
+    vlan:               0
+    description:        "CROSSLINK;ISIS-L1;LDP;HYBRID"
+    ipam_subnet_range:  METRO
+    ipam_subnet_owner:  True
+    mask:               31

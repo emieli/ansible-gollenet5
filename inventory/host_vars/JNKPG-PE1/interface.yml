@@ -1,0 +1,19 @@
+interface:
+
+  BORAS-C2_JNKPG-PE1:
+    state:              present
+    interface:          GigabitEthernet0/0/0/1
+    description:        "UPLINK;ISIS-L2;LDP"
+
+  JNKPG-PE1_VRNMO-C1:
+    state:              present
+    interface:          GigabitEthernet0/0/0/0
+    description:        "UPLINK;ISIS-L2;LDP"
+    ipam_subnet_range:  CORE
+    ipam_subnet_owner:  True
+    mask:               31
+    
+  JNKPG-ME1_JNKPG-PE1:
+    state:              present
+    interface:          GigabitEthernet0/0/0/8
+    description:        "DOWNLINK;ISIS-L1;LDP"

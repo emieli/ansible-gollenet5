@@ -1,0 +1,11 @@
+---
+
+- name: vrf
+  junos_config:
+    src: junos.j2
+  when:
+    - item.value.vrf                is defined
+    - fact_vrf_list[item.value.vrf] is defined
+  loop: "{{ interface | dict2items }}"
+  loop_control:
+    label: "{{ item.value.vrf | default() }}"

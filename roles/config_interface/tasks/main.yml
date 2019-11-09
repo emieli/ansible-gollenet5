@@ -1,0 +1,6 @@
+---
+
+- name:           "{{ ansible_network_os }}"
+  include_tasks:  "{{ ansible_network_os }}.yml"
+  when: 
+    - interface is defined

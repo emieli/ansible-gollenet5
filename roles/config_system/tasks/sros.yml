@@ -1,0 +1,50 @@
+---
+
+- name: CARD
+  sros_config:
+    lines: card 1 card-type iom3-xp-b
+    parents:
+      - configure
+  register: output  
+- name: changes performed
+  debug:
+    msg: "{{ output.commands }}"
+  when: output.commands is defined
+      
+- name: MDA
+  sros_config:
+    lines:
+      - mda 1 mda-type m5-1gb-sfp-b
+      - no shutdown
+    parents:
+      - configure
+      - card 1
+  register: output  
+- name: changes performed
+  debug:
+    msg: "{{ output.commands }}"
+  when: output.commands is defined
+    
+- name: HOSTNAME
+  sros_config:
+    lines:
+      - name "{{ inventory_hostname }}"
+    parents:
+      - configure
+      - system
+  register: output  
+- name: changes performed
+  debug:
+    msg: "{{ output.commands }}"
+  when: output.commands is defined
+
+- name: save config
+  sros_config:
+    save: yes
+      
+# - name: configure ecmp
+#   sros_config:
+#     lines:
+#       - ecmp 2
+#     parents:
+#       - configure router

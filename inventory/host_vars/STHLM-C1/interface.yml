@@ -1,0 +1,27 @@
+interface:
+
+  BRLNG-C1_STHLM-C1:
+    state:              present
+    interface:          Ethernet1/3
+    description:        "UPLINK;ISIS-L2;LDP"
+
+  LNKPG-C1_STHLM-C1:
+    state:              present
+    interface:          Ethernet1/2
+    description:        "UPLINK;ISIS-L2;LDP"
+
+  STHLM-C1_STHLM-C2:
+    state:              present
+    interface:          Ethernet1/1
+    description:        "CROSSLINK;ISIS-L2;LDP"
+    ipam_subnet_range:  CORE
+    ipam_subnet_owner:  True
+    mask:               31
+
+  STHLM-C1_STHLM-PEER1:
+    state:              present
+    interface:          Ethernet1/0
+    description:        "DOWNLINK;ISIS-L2;LDP"
+    ipam_subnet_range:  CORE
+    ipam_subnet_owner:  True
+    mask:               31

@@ -1,0 +1,12 @@
+---
+
+- name: config_isis
+  gather_facts: False
+  connection: local
+  hosts:
+    - P
+    - PEER
+    - PE
+    - ME
+  roles: 
+    - config_isis

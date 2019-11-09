@@ -1,0 +1,16 @@
+interface:
+
+  NRKPG-C2_VAXJO-C2:
+    state:              present
+    interface:          Ethernet1/2
+    description:        "UPLINK;ISIS-L2;LDP"
+
+  KLMR-PE1_VAXJO-C2:
+    state:              present
+    interface:          Ethernet1/3
+    description:        "DOWNLINK;ISIS-L2;LDP"
+
+  LUND-C2_VAXJO-C2:
+    state:              present
+    interface:          Ethernet1/0
+    description:        "UPLINK;ISIS-L2;LDP"

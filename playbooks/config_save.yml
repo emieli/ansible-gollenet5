@@ -1,0 +1,8 @@
+---
+
+- name: config_save
+  gather_facts: False
+  connection: local
+  hosts: all
+  roles: 
+    - config_save
